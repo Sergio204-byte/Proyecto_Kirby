@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <title>Acceso Privado</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        /* ESTILOS "PROFESIONALES" */
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --accent: #38bdf8;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Fondo animado sutil */
+        .background-gradient {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 50%);
+            z-index: -1;
+        }
+
+        /* Contenedor principal (Oculto al inicio) */
+        .container {
+            text-align: center;
+            max-width: 400px;
+            padding: 40px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px); /* Efecto cristal */
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            
+            /* Empezamos invisible para que GSAP lo anime */
+            opacity: 0; 
+            visibility: hidden;
+        }
+
+        h1 { font-weight: 600; font-size: 2rem; margin-bottom: 10px; }
+        p { font-weight: 300; color: #94a3b8; line-height: 1.6; }
+        
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: var(--accent);
+            color: #0f172a;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .btn:hover { transform: scale(1.05); }
+
+        /* Pantalla de Error */
+        #error-screen {
+            display: none;
+            color: #ef4444;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-gradient"></div>
+
+    <div class="container" id="secret-content">
+        <h1 class="anim-item">Bienvenido</h1>
+        <p class="anim-item">Has accedido al portal exclusivo mediante el código QR seguro.</p>
+        <div class="anim-item">
+            <a href="#" class="btn">Descargar Archivo</a>
+        </div>
+    </div>
+
+    <div id="error-screen">
+        <h2>403 - Acceso Denegado</h2>
+        <p>No tienes permiso para ver este sitio.</p>
+    </div>
+
+    <script>
+        // --- 1. CONFIGURACIÓN ---
+        const CLAVE_SECRETA = "acceso123"; // Tu código secreto
+        
+        // --- 2. LÓGICA DE VALIDACIÓN ---
+        const params = new URLSearchParams(window.location.search);
+        const tokenRecibido = params.get('token'); // Busca ?token=...
+
+        if (tokenRecibido === CLAVE_SECRETA) {
+            iniciarAnimacion();
+        } else {
+            // Si el token falla, mostramos error o redirigimos
+            document.getElementById('error-screen').style.display = 'block';
+            
+            // Opcional: Redirigir a Google tras 2 segundos
+            // setTimeout(() => window.location.href = 'https://google.com', 2000);
+        }
+
+        // --- 3. ANIMACIONES PROFESIONALES (GSAP) ---
+        function iniciarAnimacion() {
+            // Hacemos visible el contenedor
+            const container = document.getElementById('secret-content');
+            container.style.visibility = 'visible';
+
+            // Creamos una línea de tiempo
+            const tl = gsap.timeline();
+
+            // 1. Aparece el contenedor (Fade In + Sube un poco)
+            tl.to(container, { 
+                duration: 1, 
+                opacity: 1, 
+                y: 0, 
+                y: 20, // Empieza 20px abajo (definir start en CSS o con from)
+                ease: "power3.out" 
+            });
+
+            // 2. Animar los elementos internos uno por uno (Stagger)
+            tl.from(".anim-item", {
+                duration: 0.8,
+                y: 30,
+                opacity: 0,
+                stagger: 0.2, // Retraso de 0.2s entre cada elemento
+                ease: "back.out(1.7)" // Efecto rebote suave
+            }, "-=0.5"); // Empieza un poco antes de que termine la anterior
+        }
+    </script>
+</body>
+</html>
